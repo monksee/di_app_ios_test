@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8mb4">
+<!--specify user scalable as no, in order to mimick a native app. recommended by google-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.min.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css"/>
+<link rel="canonical" href="http://www.dublininquirer.com/" />
+<script>
+var app_root_url = "https://www.dublininquirer.com/app_server_files/"; //this is the root of the url where all ajax requests will be sent. 
+
+//this is the root of the url where all ajax requests will be sent when dealing with images. 
+var app_root_url_for_image_uploads = "http://www.dublininquirer.com/app_server_files/"; 
+window.onload = function(){
+	//insert the main app images to the document. They are stored on the server so that they can be easily replaced.
+	document.getElementById("home_read_image").src = app_root_url + 'images/home_menu_images/read.jpg';
+	document.getElementById("home_engage_image").src = app_root_url + 'images/home_menu_images/engage.jpg';
+	document.getElementById("home_contribute_image").src = app_root_url + 'images/home_menu_images/contribute.jpg';
+	document.getElementById("registration_pic").src = app_root_url + 'images/profile_images/blank-avatar.png';
+	document.getElementById("new_profile_pic").src = app_root_url + 'images/profile_images/blank-avatar.png';
+}
+</script>
+
+<!--load our jquery files here at the top because when loading at the bottom all of the jquery mobile pages appear on screen underneath each other-->
+<!--when the page initializes until the jquery mobile script is loaded and it doesnt look good-->
+<script src="js/jquery.min.js"></script>
+
+<script>  
+$(document).on('mobileinit',function(){   
+	//the following line of code is necessary for JQuery mobile to work on Chrome locally. 
+    //we need to do this before including our jquery mobile script 
+	$.mobile.pushStateEnabled = false;
+	//tell jquery mobile that the page container will be the div with id of container_wrapper
+	$.mobile.pageContainer = $("#container_wrapper");
+	//set the jQuery mobile delete icon to be the font awesome times icon
+	$(".ui-icon-delete").html('<i class="fa fa-times"></i>');
+});
+</script>
+
+<script src="js/jquery.mobile-1.4.5.min.js"></script>	
+<script src="phonegap.js"></script>
+<!--incclude script for google analytics-->
+<script type="text/javascript" src="js/libs/GALocalStorage.js"></script>
+<script>
+//set the google analytics account number
+   // ga_storage._setAccount('UA-63907972-2');  
+  //  ga_storage._trackPageview('/index.html'); //default url
+
+</script>
+
+</head>
+<body>
+	<!--use the html5 header tag-->
+	<header>
+		<ul class="header_nav" >
+			<li class="header_menu_item">
+				<a id="back_header_link" class="header_menu_link normal_link" data-rel="back" data-transition="none"><i class="fa fa-arrow-left"></i></a>
+				
+			</li>
+			<li class="header_menu_item">
+				<a href="#page-read" id="read_header_link" class="header_menu_link normal_link" data-transition="none">
+					<i class="fa fa-book"></i>	
+				</a>
+			</li>
+			<li class="header_menu_item">
+				<a href="#page-engage" id="engage_header_link" class="header_menu_link normal_link" data-transition="none">
+					<i class="fa fa-comments" aria-hidden="true"></i>
+				</a>
+			</li>
+			<li class="header_menu_item">
+				<a href="#page-contribute" id="contribute_header_link" class="header_menu_link normal_link" data-transition="none">
+					<i class="fa fa-pencil" aria-hidden="true"></i>
+				</a>
+			</li>
+        		<li id="navicon" class="header_menu_item navicon">
+				<span class="header_menu_link navicon_header_link">
+					<i class="fa fa-navicon"></i>
+				</span>
+			</li>  	  
+       	</ul><!--/header_nav-->		
+	</header>
+
+	<p class="loading_page_message"></p>
+	
+	<!--The following div with id container_wrapper will hold all of our jQuery mobile pages-->
+	<div id="container_wrapper" class="scrollable" >
+		<!--login page-->
+		<div data-role="page" id="page-login" class="container no_padding">
+			<div data-role="content">
+				<div class="content-primary">
+					<span class="logo_area"><img src="images/logo-square.png" width="100" height="100" alt="Dublin Inquirer Logo"></span>
+					<div id="initial_loading_area" class="intro_section extra_margin_top"><p id="initial_loading_text" class="text_paragraph"></p></div>				
+					<div id="login_form_intro" class="intro_section"><p class="text_paragraph">Please log in with your subscription email and password.</p></div>
+
+					<div id="login_form_area" class="login_registration_form_area container_small">
+						<p id="login_error" class="text_paragraph align_left error_message"></p>
+						<form id="log_in_form" name="log_in_form" method="post" action="">
+							<div class="form_divider">
+								<label for="login_email">Email</label>
+								<input data-role="none" id="login_email" name="login_email" type="email"  title="Must be a valid email address." maxlength="254" placeholder="&#xf0e0;  Email" required/>
+								<p id="login_email_feedback_area" class="small_feedback_area"><span id="login_email_popover_rectangle" class="popover_rectangle">Must be a valid email address.</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<div class="form_divider divider_with_extra_margin">	
+								<label for="login_password">Password</label>
+								<input data-role="none" id="login_password" name="login_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Password" autocomplete="off" required/>			
+								<p id="login_password_characters_remaining" class="characters_remaining"></p>
+								<p id="login_password_feedback_area" class="large_feedback_area"><span id="login_password_popover_rectangle" class="popover_rectangle">Password must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!'</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<div class="form_divider">							
+								<div class="button_wrapper">	
+									<input type="submit" id="log_in_button" data-role="none" class="button_style medium_wide_button center_button" value="Log in"/>
+								</div>					
+							</div>					
+	
+						</form>
+						<div id="forgot_password_link_area"><a id="forgot_password_link"  class="normal_link" href="#page-forgot-password" data-transition="none">Forgotten your password?</a></div>
+					
+					</div><!--/login_form_area-->
+					
+					<div id="click_to_register_button" class="click_to_register_login"><p class="text_paragraph" >Don't have an account? <a class="inline_link normal_link" href="#page-registration" data-transition="none">Sign up</a></p></div>
+					</div><!--/content-primary-->
+			</div><!--/content-->		
+		</div><!--/page-login-->
+
+		<!--forgot-password page-->
+		<div data-role="page" id="page-forgot-password" class="container no_padding">		
+			<div data-role="content">
+				<div class="content-primary">
+					<span class="logo_area"><img src="images/logo-square.png" width="100" height="100" alt="Dublin Inquirer Logo"></span>
+					<div id="forgot_password_form_intro" class="intro_section">
+						<p class="text_paragraph align_left">Please enter the email address you signed up with, and answer the security question below, and an email will be sent to you with steps required to reset your password.</p>
+					</div>
+					<div id="forgot_password_form_area" class="login_registration_form_area container_small">
+						<form id="forgot_password_form" name="log_in_form" method="post" action="">
+							<div class="form_divider">
+								<label for="forgot_password_email">Email</label>
+								<input data-role="none" id="forgot_password_email" name="forgot_password_email" type="email"  title="Must be a valid email address." maxlength="254" placeholder="&#xf0e0;  Email" required/>
+								<p id="forgot_password_feedback_area" class="small_feedback_area"><span id="forgot_password_email_popover_rectangle" class="popover_rectangle">Must be a valid email address.</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<div class="form_divider divider_with_extra_margin">	
+								<label for="security_question">Security question: Please choose the month you were born.</label>
+								<select id='forgot_password_mob_select' name="forgot_password_mob_select" required>
+									<option value=''>--Select--</option>
+									<option value='1'>January</option>
+									<option value='2'>February</option>	
+									<option value='3'>March</option>	
+									<option value='4'>April</option>
+									<option value='5'>May</option>	
+									<option value='6'>June</option>	
+									<option value='7'>July</option>
+									<option value='8'>August</option>	
+									<option value='9'>September</option>	
+									<option value='10'>October</option>
+									<option value='11'>November</option>	
+									<option value='12'>December</option>			
+								</select>	
+							</div>
+							<p id="forgot_password_error" class="text_paragraph align_left error_message"></p>
+							<div class="form_divider">							
+								<div class="button_wrapper">	
+									<input type="submit" id="forgot_password_submit_button" data-role="none" class="button_style medium_wide_button center_button" value="Submit"/>
+								</div>					
+							</div>					
+						</form>
+					</div><!--/forgot_password_form_area-->
+					
+					<div id="click_to_login_again_button" class="click_to_register_login">
+					    <p class="text_paragraph" >Remembered your password? <a class="inline_link normal_link" href="#page-login" data-transition="none">Log In</a>
+					    </p>
+					</div>
+				</div><!--/content-primary-->
+			</div><!--/content-->
+		</div><!--/page-forgot-password-->
+
+		<!--password-reset page-->	
+		<div data-role="page" id="page-password-reset" class="container no_padding">	
+			<div data-role="content">
+				<div class="content-primary">
+					<span class="logo_area"><img src="images/logo-square.png" width="100" height="100" alt="Dublin Inquirer Logo"></span>				
+					<div id="password_reset_form_intro" class="intro_section"><p class="text_paragraph">Reset your password</p></div>
+					<div id="password_reset_form_area" class="login_registration_form_area container_small">		
+						<p id="password_reset_message" class="text_paragraph align_left">A temporary password has been sent to your email address. 
+							<span class="break_between_paragraphs"></span>Please enter this temporary password in the form below (within the next 20 minutes) along with your email address and create a new password.</p>
+
+						<form id="password_reset_form" name="log_in_form" method="post" action="">
+							<div class="form_divider">
+								<label for="password_reset_email">Email</label>
+								<input data-role="none" id="password_reset_email" name="password_reset_email" type="email"  title="Must be a valid email address." maxlength="254" placeholder="&#xf0e0;  Email" required/>
+								<p id="password_reset_email_feedback_area" class="small_feedback_area"><span id="password_reset_email_popover_rectangle" class="popover_rectangle">Must be a valid email address.</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<div class="form_divider divider_with_extra_margin">
+								<label for="temporary_reset_password">Temporary password (received in an email)</label>
+								<input data-role="none" id="temporary_reset_password" name="temporary_reset_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Temporary password" autocomplete="off" required/>			
+								<p id="temporary_password_characters_remaining" class="characters_remaining"></p>
+								
+							</div>
+							<div class="form_divider divider_with_extra_margin">
+								<label for="reset_password_new_password">New password</label>
+								<input data-role="none" id="reset_password_new_password" name="reset_password_new_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  New password" autocomplete="off" required/>			
+								<p id="reset_password_new_password_characters_remaining" class="characters_remaining"></p>
+								<p id="reset_password_new_password_feedback_area" class="large_feedback_area"><span id="reset_password_new_password_popover_rectangle" class="popover_rectangle">Password must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!'</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<div class="form_divider divider_with_extra_margin">
+								<label for="reset_password_confirm_password">Confirm new password</label>
+								<input data-role="none" id="reset_password_confirm_password" name="reset_password_confirm_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Confirm new password" autocomplete="off" required/>			
+								<p id="reset_password_confirm_password_characters_remaining" class="characters_remaining"></p>
+								<p id="reset_password_confirm_password_feedback_area" class="large_feedback_area"><span id="reset_password_confirm_password_popover_rectangle" class="popover_rectangle">Password must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!'</span><span class="popover_triangle"></span></p>
+								
+							</div>
+							<p id="password_reset_error" class="text_paragraph align_left error_message"></p>
+							<div class="form_divider">							
+								<div class="button_wrapper">	
+									<input type="submit" id="password_reset_submit_button" data-role="none" class="button_style medium_wide_button center_button" value="Reset Password"/>
+								</div>					
+							</div>					
+	
+						</form>
+					
+					</div><!--/password_reset_form_area-->
+					
+					<div id="click_to_login_again_button" class="click_to_register_login">
+					    <p class="text_paragraph" >Remembered your password? <a class="inline_link normal_link" href="#page-login" data-transition="none">Log In</a>
+					    </p>
+					</div>
+
+				</div><!--/content-primary-->
+			</div><!--/content-->
+		</div><!--/page-password-reset-->
+
+		<!--password-reset-confirmation page-->
+		<div data-role="page" id="page-password-reset-confirmation" class="container no_padding">	
+			<div data-role="content">
+				<div class="content-primary">
+					<span class="logo_area"><img src="images/logo-square.png" width="100" height="100" alt="Dublin Inquirer Logo"></span>
+					<div>	
+						<div class="intro_section">
+							<p class="large_text blue_text text_center extra_margin_top">Your password has been reset!</p>
+						</div>
+						<div id="logging_in_animation_area">
+						    <p id="logging_in_text" class="large_text blue_text text_center bold_text extra_margin_top">Logging in</p> 
+                            <div class="ellipsis_dots_area float_left">
+                                <span class="ellipsis_dot move_animation"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                <span class="ellipsis_dot dot1 move_animation1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                <span class="ellipsis_dot dot2 move_animation2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                            </div>
+                       </div>
+					</div>
+				</div><!--/content-primary-->
+			</div><!--/content-->	
+		</div><!--/page-password-reset-confirmation-->
+
+
+		<!--registration page-->
+		<div data-role="page" id="page-registration" class="container no_padding">
+			<div data-role="content">
+				<div class="content-primary">
+					<span class="logo_area"><img src="images/logo-square.png" width="100" height="100" alt="Dublin Inquirer Logo"></span>
+						
+					<div id="registration_form_intro" class="intro_section">
+						<p class="text_paragraph align_left">Please sign up using your Dublin Inquirer subscription email</p>
+						<p class="text_paragraph blue_text align_left">Please note: If you have just setup a subscription, please wait at least 3 minutes before registering with the app.</p>
+					</div>
+
+				
+					<div id="registration_form_area" class="login_registration_form_area container_small">
+						
+						<p class="login_registration_title">Create an account</p>
+
+						<div id="registration_pic_wrapper" class="profile_pic_wrapper smaller_pic">
+							<img id="registration_pic" class="profile_pic" src="" alt="Registration picture"/>
+							
+						</div>
+						<div class="form_divider">
+							<div class="button_wrapper">
+								<button id="upload_profile_picture_button" class="button_style wide_button center_button">Upload picture</button>
+							</div>
+							<p class="tiny_text"><i>Tip: For best results upload a square picture.</i></p>
+						</div>
+						<form id="registration_form" name="registration_form" method="post" action="">
+							<div class="form_divider">
+								<div class="form_divider">
+									<label for="registration_display_name">Display name</label>
+									<input data-role="none" id="registration_display_name" name="registration_display_name" type="text" title="Must be 3 to 25 characters and contain only letters, numbers and the following special symbols .,\'-" minlength="3" maxlength="25" placeholder="&#xf007;  Display name" required/>
+									<p id="registration_display_name_characters_remaining" class="characters_remaining"></p>
+									<p id="registration_display_name_feedback_area" class="large_feedback_area">
+										<span id="registration_display_name_popover_rectangle" class="popover_rectangle">Display name must be 3 to 25 characters and contain only letters, numbers and the following special symbols .,\'-</span>
+										<span class="popover_triangle"></span>
+									</p>
+								
+								</div>
+								<div class="form_divider emall_divider divider_with_extra_margin">		
+									<label for="registration_email">Subscription email</label>
+									<input data-role="none" id="registration_email" name="registration_email" type="email"  title="Must be a valid email address." maxlength="254" placeholder="&#xf0e0;  Subscription email" required/>
+									<p id="registration_email_feedback_area" class="small_feedback_area">
+										<span id="registration_email_popover_rectangle" class="popover_rectangle">Must be a valid email address.</span>
+										<span class="popover_triangle"></span>
+									</p>
+									
+								</div>	
+								<div class="form_divider divider_with_extra_margin">
+									<label for="registration_password">Password</label>
+									<input data-role="none" id="registration_password" name="registration_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Password" autocomplete="off" required/>			
+									<p id="registration_password_characters_remaining" class="characters_remaining"></p>
+									<p id="registration_password_feedback_area" class="large_feedback_area">
+										<span id="registration_password_popover_rectangle" class="popover_rectangle">Password must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!'</span>
+										<span class="popover_triangle"></span>
+									</p>
+								
+								</div>
+								<div class="form_divider divider_with_extra_margin">
+									<label for="confirm_registration_password">Confirm password</label>
+									<input data-role="none" id="confirm_registration_password" name="confirm_registration_password" type="password" title="Must be 10 to 14 characters and only contain numbers, letters and the following special symbols .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Password" autocomplete="off" required/>			
+									<p id="confirm_registration_password_characters_remaining" class="characters_remaining"></p>
+									<p id="confirm_registration_password_feedback_area" class="large_feedback_area">
+										<span id="confirm_registration_password_popover_rectangle" class="popover_rectangle">Password must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!'</span>
+										<span class="popover_triangle"></span>
+									</p>
+								
+								</div>
+								<div class="form_divider divider_with_extra_margin">	
+									<label for="security_question">Security question: Please choose the month you were born.</label>
+									<select id='registration_mob_select' name="registration_mob_select" required>
+										<option value=''>--Select--</option>
+										<option value='1'>January</option>
+										<option value='2'>February</option>	
+										<option value='3'>March</option>	
+										<option value='4'>April</option>
+										<option value='5'>May</option>	
+										<option value='6'>June</option>	
+										<option value='7'>July</option>
+										<option value='8'>August</option>	
+										<option value='9'>September</option>	
+										<option value='10'>October</option>
+										<option value='11'>November</option>	
+										<option value='12'>December</option>			
+									</select>	
+								</div>
+							</div>	
+
+							<p class="tiny_text align_left">
+								<i>By clicking "Create account", you agree to our <a class="inline_link normal_link blue_text" href="#page-terms-of-use" data-transition="none" >Terms of Use</a>.
+								</i>
+							</p>
+							<p id="registration_feedback_message" class="text_paragraph align_left"></p>
+							<div class="form_divider">							
+								<div class="button_wrapper">
+									<input type="submit" id="registration_button" data-role="none" class="button_style wide_button center_button" value="Create account"/>
+								</div>	
+							</div>		
+						</form>
+						
+					</div><!--/registration_form_area-->
+					<div id="click_to_login_button" class="click_to_register_login">
+						<p class="text_paragraph" >Already have an account? <a class="inline_link normal_link" href="#page-login" data-transition="none" >Log in</a></p>
+					</div>
+					
+				</div><!--/content-primary-->
+			</div><!--/content-->	
+		</div><!--/page-registration-->
+
+
+		<!--home page-->
+		<div data-role="page" id="page-home" class="container">
+			<p class="user_welcome_message"></p>
+			<div class="small_logo_area">
+				<a href="#page-home" class="small_logo_link normal_link" data-transition="none">
+					<img width="300" height="121" src="images/logo-wide-small.png" alt="Dublin Inquirer Logo"/>
+				</a>
+			</div>
+			<div data-role="content">
+				<div class="content-primary">
+					<div class="intro_section"></div>
+				
+					<ul id="home_page_menu">
+						<li class="home_menu_list_item" >
+							<a href="#page-read" data-transition="none" class="home_menu_list_item_link normal_link">
+
+								<img id="home_read_image" src="" alt="Read menu image"/>
+								<span class="title_background_home"></span>
+								<span class="menu_item_title_home">
+									<span class="menu_item_heading">Read</span>
+									<span class="menu_item_description">Get the latest web and print articles.</span>
+								</span>
+							</a>
+						</li>
+						<li class="home_menu_list_item" >
+							<a href="#page-engage" data-transition="none" class="home_menu_list_item_link normal_link">
+
+								<img id="home_engage_image" src="" alt="Engage menu image"/>
+								<span class="title_background_home"></span>
+								<span class="menu_item_title_home">
+									<span class="menu_item_heading">Engage</span>
+									<span class="menu_item_description">Talk to us about what we're working on.</span>
+								</span>														
+								
+							</a>
+						</li>
+						<li class="home_menu_list_item" >
+							<a href="#page-contribute" data-transition="none" class="home_menu_list_item_link normal_link">
+
+								<img id="home_contribute_image" src="" alt="Contribute menu image"/>
+								<span class="title_background_home"></span>
+								<span class="menu_item_title_home"><span class="menu_item_heading">Contribute</span><span class="menu_item_description">Got an idea or tip? We'd love to hear it.</span></span>								
+								
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div><!--/content-->
+		</div><!--/page-home-->
+		
+
+		<!--"read" page containing news cateogry list items-->
+		<div data-role="page" id="page-read" class="container">
+			<div data-role="content">
+				<div class="content-primary">
+					<h2 class="latest_articles_heading">This Week's Stories</h2>
+					<!--insert list of latest articles here-->
+					<div id="latest_articles_area"></div>
+					<h2 class="latest_articles_heading">Read More</h2>
+					<div class="read_search_area_wrapper">
+						<form id="search_read_section_form" name="search_read_section_form" method="post" action="">
+						<div id="read_search_area">
+							<div id="search_button_wrapper" class="form_divider">
+							
+							<input id="search_read_section_input_field" tabindex="0" name="search_read_section_input_field" type="text" data-role="none" minlength="3" maxlength="160" placeholder="Search News..." required/>
+							<button type="submit" data-role="none" id="submit_search"><i class="fa fa-search"></i></button>
+							
+							<p id="search_feedback_area" class="search_feedback_area"><span id="search_popover_rectangle" class="popover_rectangle">Must be between 3 and 160 characters.</span><span class="popover_triangle"></span></p>
+							</div>
+						</div>
+						</form>
+					</div>
+					<ul id="read_section_list" data-filter="false" data-filter-placeholder="Search categories..." data-inset="true" data-role="listview" data-filter-reveal="false">
+						<!--generate category menu list items after successful login and insert here with javascript-->
+							
+					</ul>	
+				</div>
+				
+			</div><!--/content-->	
+		</div><!--/page-read-->
+
+		<!--contribute page-->
+		<div data-role="page" id="page-contribute" class="container">
+			<div data-role="content">
+				<div class="content-primary">
+					<h2>Your Contribution</h2>
+					<div class="intro_section">
+						<p class="text_paragraph align_left extra_margin_top">Help us answer questions that matter to you! <br>Do you wander around the city and wonder why it is the way it is? 
+						<br>Do you have queries about its parks? Its people? Its politics? <br><br>Let us know what you'd like us to look into through the form below. <br>You can also share photos that have piqued your interest. 
+
+						</p>
+
+						<p class="small_text align_left"><i>All fields marked <span class="asterisk">*</span> are mandatory.</i></p>
+					</div>
+					<div class="container_small">	
+						
+						<div id="story_form_area">
+						
+							<form id="story_form" name="story_form" method="post" action="" enctype="multipart/form-data">
+						
+								<div class="form_divider divider_with_extra_margin">
+									<label for="contribute_full_name"><span class="asterisk">*</span>Full Name</label>		
+									<input id="contribute_input0" tabindex="0" name="contribute_full_name" type="text" data-role="none" minlength="3" maxlength="50" placeholder="Full Name" required/>
+									<p id="contribute_full_name_feedback_area" class="large_feedback_area"><span id="contribute_full_name_popover_rectangle" class="popover_rectangle">Full name must be 3 to 50 characters and contain only letters, numbers and the following special symbols .,\'-</span><span class="popover_triangle"></span></p>
+									<p id="contribution_form_full_name_characters_remaining" class="characters_remaining"></p>
+								</div><!--/form_divider-->
+
+	
+								<div class="form_divider divider_with_extra_margin">	
+									<label for="contribute_email_address"><span class="asterisk">*</span>E-mail</label>		
+									<input id="contribute_input1" tabindex="1" name="contribute_email_address" type="email" data-role="none" maxlength="254" placeholder="E-mail" required/>
+								</div><!--/form_divider-->	
+
+						
+								<div class="form_divider divider_with_extra_margin">	
+									<label for="contribute_phone">Phone</label>		
+									<input id="contribute_input2" tabindex="2" name="contribute_phone" type="tel" data-role="none" maxlength="20" placeholder="Phone number" />
+									<p id="contribute_phone_feedback_area" class="medium_feedback_area"><span id="contribute_phone_popover_rectangle" class="popover_rectangle">Phone number must be either blank, or 7 to 20 characters and contain only numbers.</span><span class="popover_triangle"></span></p>
+									<p id="contribution_form_phone_characters_remaining" class="characters_remaining"></p>
+								</div><!--/form_divider-->	
+						
+
+								<div class="form_divider divider_with_extra_margin">
+									<label for="contribute_subject"><span class="asterisk">*</span>Subject</label>		
+									<input id="contribute_input3" tabindex="3" name="contribute_subject" type="text" data-role="none" minlength="2" maxlength="150" placeholder="Subject" required/>
+									<p id="contribution_form_subject_characters_remaining" class="characters_remaining"></p>
+								</div><!--/form_divider-->
+
+					
+								<div class="form_divider divider_with_extra_margin">
+									<label for="contribute_message"><span class="asterisk">*</span>Tell us about it</label>		
+									<textarea id="contribute_input4" tabindex="4" name="contribute_message" minlength="20" maxlength="7000" placeholder="Tell us about it..."  rows="4" data-role="none" required></textarea>
+									<p id="contribute_message_feedback_area" class="small_feedback_area"><span id="contribute_message_popover_rectangle" class="popover_rectangle">Message must contain 20 to 7000 characters.</span><span class="popover_triangle"></span></p>
+									
+									<p id="contribution_form_message_characters_remaining" class="characters_remaining"></p>
+								</div><!--/form_divider-->
+						
+							</form>
+
+							<div class="button_wrapper">
+								<button id="add_contribute_picture" class="button_style normal_width_button"><i class="fa fa-camera"></i>  Upload</button>
+								<button id="remove_contribute_images"><i class="fa fa-times"></i> Remove Images</button>
+							</div>
+							<p class="tiny_text align_left"><i>Maximum of 5 images allowed.</i></p>
+							<!-- images here -->
+							<div id="images">
+						
+							</div>
+							<div id="progress_bar">
+								<div class="progress_outer">
+									<div class="progress_inner">
+										<div class="progress_stripes"></div>
+									</div>
+								</div>
+							</div>
+							<p id="contribute_feedback_message"></p>
+
+							<div class="submit_button_area button_wrapper">
+								<button type="submit" data-role="none"  tabindex="7" class="button_style center_button medium_wide_button" id="submit_story" >Submit</buttom> 
+							</div>
+						</div><!--/story_form_area-->
+					</div><!--/container_small-->
+				</div><!--/content_primary-->
+			</div><!--/content-->
+		</div><!--/contribute page-->
+
+
+		<!--confirmation page after contribute form is submitted-->
+		<div data-role="page" id="page-contribution-confirmation" class="container">	
+			<div data-role="content">
+				<div class="content-primary">
+					
+					<h2>Your Contribution</h2>
+					<div id="contribute_message_area">	
+						<div class="intro_section">	
+							<p class="medium_text blue_text text_center extra_margin_top">Your contribution has been sent to the Dublin Inquirer team. Thanks for taking the time. We will be in touch!</p>
+							<p class="text_center extra_margin_top"><a class="normal_link" data-transition="none" href="#page-home">Go to home page
+							</a></p>
+						</div>
+					</div>
+				</div><!--/content-primary-->
+			</div><!--/content-->
+		</div><!--/page-contribution-confirmation-->
+
+		<!--engage page. i.e where the engage posts and comments are-->
+		<div data-role="page" id="page-engage" class="container">
+			<div data-role="content">
+				<div class="content-primary">
+					<h2>Engage</h2>
+					<div class="intro_section"><p class="text_paragraph extra_margin_top">Talk to us about what we're working on!</p></div>
+						<div id="engage_form_area">
+							<div class="container_small">
+						
+								<!--on submitting the form the paragraph should display in real time for all subscribers to see-->
+								<form id="engage_form" name="engage_form" method="post" action="" accept-charset="UTF-8">
+								
+									<div class="form_divider">
+										<label for="engage_post_text"></label>		
+										<textarea id="engage_post_text" name="engage_post_text" minlength="2" maxlength="2000" placeholder="Write your post here..."  rows="2" data-role="none" required></textarea>
+										<p id="engage_form_characters_remaining"></p>
+										<div class="button_container">
+											<span id="add_image_for_post"><i class="fa fa-camera"></i></span>
+											<span id="remove_engage_images"><i class="fa fa-times"></i> Remove Images</span>
+										</div>
+										<p id="post_feedback_area" class="post_feedback_area"><span id="post_popover_rectangle" class="popover_rectangle"></span><span class="popover_triangle"></span></p>
+				
+									</div><!--/form_divider-->
+									<!-- images for a post go here -->
+									<div id="engage_post_images_section">
+							
+									</div>
+									<p id="engage_post_feedback_message"></p>
+									<div id="engage_post_progress_bar">
+										<div class="progress_outer">
+											<div class="progress_inner">
+												<div class="progress_stripes"></div>
+											</div>
+										</div>
+									</div>
+									<div class="form_divider">						
+										<div class="button_wrapper">
+											<input type="submit" id="submit_engage_post" data-role="none" class="button_style narrow_width_button" value="Post"/>
+										</div><!--/button_wrapper-->
+									</div><!--/form_divider-->
+									
+								</form>
+							</div>
+						</div><!--/engage_form_area-->
+					
+						<!--previous posts along with comments should be displayed in the engage_post_area-->
+						<ul id="engage_post_area" data-filter="true" data-filter-placeholder="Filter conversations..." data-inset="true" data-role="listview" data-filter-reveal="false">
+						</ul>
+					
+				</div><!--/content_primary-->
+			</div><!--/content-->
+		</div><!--engage page-->
+	
+		<!--account page-->
+		<div data-role="page" id="page-account" class="container">
+		
+			<div data-role="content">
+				<div class="content-primary">
+					<div class="container_small">	
+						<div id="profile_area">
+							<div id="profile_pic_wrapper" class="profile_pic_wrapper">
+								<img id="profile_pic" class="profile_pic" src="" alt="Profile image"/>
+				
+							</div>
+						</div>
+						<div class="form_divider">
+							<div class="button_wrapper">
+								<button id="change_profile_picture_button" class="button_style wide_button center_button">Change picture</button>
+							</div>
+						</div>
+						<div class="user_details_wrapper">
+							
+							<p id="profile_display_name_area"><span id="profile_display_name"></span><input type="hidden" id="hidden_input_for_display_name" data-role="none" value=""/><span id="edit_display_name"><i class="fa fa-pencil"></i></span></p>
+								<p id="change_display_name_success_message">Your display name has been changed successfully!</p>
+						
+							<div id="change_display_name_area">
+								<form id="change_display_name_form" name="change_display_name_form" method="post" action="">
+							
+									<div class="form_divider">	
+										<input data-role="none" id="change_display_name_input_field" name="change_display_name_input_field" type="text" title="Must be 3 to 25 characters and contain only letters, numbers and the following special symbols .,\'-" minlength="3" maxlength="25" placeholder="&#xf007;  Display Name" required/>
+										<p id="change_display_name_characters_remaining" class="characters_remaining"></p>
+									</div>
+									<p id="change_display_name_error_message"></p>
+									<div class="form_divider">							
+										<div class="button_wrapper">	
+											<button type="button" id="cancel_change_name" data-role="none" class="button_style very_narrow_width_button">Close</button>	
+											<input type="submit" id="confirm_change_name" data-role="none" class="button_style narrow_width_button" value="Save"/>
+									
+										</div>					
+									</div>					
+	
+								</form>
+							</div><!--/change_display_name_area-->
+							<p id="profile_email_address"></p><input type="hidden" id="hidden_input_for_email" data-role="none" value=""/>
+							<p>
+								<span id="change_password_button">Change password</span>
+								<span id="add_password_button">Add password</span>
+							</p>
+						</div><!--/user_details_wrapper-->
+
+						<!--success messages which are shown after a password is added or changed successfully-->
+						<p id="add_password_success_message">Your password has been added successfully!</p>
+						<p id="change_password_success_message">Your password has been changed successfully!</p>
+
+						<!--change_password_area containing the form for changing a password-->
+						<div id="change_password_area">
+							<p class="text_paragraph align_left">Note: You are about to change the password for email address: <span id="email_address_for_password_change" class="bold_text"></span></p>
+							<form id="change_password_form" name="change_password_form" method="post" action="">
+							
+								<div class="form_divider">	
+									<input data-role="none" id="current_password" name="current_password" type="password" title="Must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  Current Password" autocomplete="off" required/>			
+									<p id="current_password_characters_remaining" class="characters_remaining"></p>
+								</div>
+								<div class="form_divider">	
+									<input data-role="none" id="new_password_first_time" name="new_password_first_time" type="password" title="Must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  New Password" autocomplete="off" required/>			
+									<p id="new_password_first_time_characters_remaining" class="characters_remaining"></p>
+								</div>
+								<div class="form_divider">
+									<input data-role="none" id="new_password_second_time" name="new_password_second_time" type="password" title="Must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  New Password (again)" autocomplete="off" required/>			
+									<p id="new_password_second_time_characters_remaining" class="characters_remaining"></p>
+								</div>
+	
+								<div class="form_divider">
+									<p id="change_password_error_message"></p>
+								</div>
+								<div class="form_divider">							
+									<div class="button_wrapper">	
+										<button type="button" id="cancel_change_password" data-role="none" class="button_style very_narrow_width_button">Close</button>	
+										<input type="submit" id="confirm_change_password" data-role="none" class="button_style wide_button" value="Change Password"/>
+									</div>					
+								</div>					
+							</form>
+						</div><!--/change_password_area-->
+						<!--add_password_area containing the form for adding a password. This is used usually when a user has registered with facebook and therefore didnt sign up with a password-->
+						<div id="add_password_area">
+							<p class="text_paragraph align_left">Add a password to your account (associated with email address: <span id="email_address_for_password_addition" class="bold_text"></span>) so that you have the option to log in with email and password!</p>
+							<form id="add_password_form" name="add_password_form" method="post" action="">
+								<div class="form_divider">	
+									<input data-role="none" id="password_first_time" name="password_first_time" type="password" title="Must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  New Password" autocomplete="off" required/>			
+								</div>
+								<div class="form_divider">
+									<input data-role="none" id="password_second_time" name="password_second_time" type="password" title="Must be between 10 and 14 characters and only contain numbers, letters and the following special characters .,-_$!" minlength="10" maxlength="14" placeholder="&#xf084;  New Password (again)" autocomplete="off" required/>			
+								</div>
+	
+								<div class="form_divider">
+									<p id="add_password_error_message"></p>
+								</div>
+
+								<div class="form_divider">							
+									<div class="button_wrapper">	
+										<button type="button" id="cancel_add_password" data-role="none" class="button_style very_narrow_width_button">Close</button>	
+										<input type="submit" id="confirm_add_password" data-role="none" class="button_style wide_button" value="Add Password"/>
+									
+									</div>					
+								</div>					
+							</form>
+						</div><!--/add_password_area-->
+					</div>		
+				</div>
+			</div><!--/content-->
+		</div><!--/page-account-->
+
+
+		<!--profile_pic_popup. This will open when a user chooses to change their profile picture in their account area-->
+		<div id="profile_pic_popup" class="popup" data-theme="a" data-transition="none" data-overlay-theme="a">
+			<div>
+				<!--use the data-rel=back attribute in order to close the popup-->
+				<a id="cancel_profile_pic_upload" class="ui-btn-right normal_link" data-role="button" data-rel="back" data-transition="none"><i class="fa fa-times"></i></a>
+			</div>
+			<div data-role="main" class="ui-content">
+        			<div class="profile_pic_wrapper">
+					<img id="new_profile_pic" class="profile_pic" src="" alt="Profile image"/>
+				
+				</div>
+				<p class="tiny_text"><i>Tip: For best results upload a square picture.</i></p>
+			</div>
+			<div class="button_wrapper upload_profile_pic_button_area">	
+				<button id="choose_profile_pic_button" class="narrow_width_button button_style" data-role="button">Browse</button>
+				<button id="confirm_profile_pic_upload" class="normal_width_button button_style" data-role="button" >Confirm</button><!--this button will also close the popup-->
+			</div>	
+		</div><!--/profile_pic_popup-->
+
+		<!--support page-->
+		<div data-role="page" id="page-support" class="container">
+			<div data-role="content">
+				<div class="content-primary">
+					<h2>Support</h2>
+					<div class="intro_section extra_margin_top">
+							<p class="extra_margin_top">If you have any technical queries about the app, please send your query to <a class="email_link" href="mailto:appsupport@dublininquirer.com?Subject=Support" target="_blank">appsupport@dublininquirer.com</a>.</p>
+							<p class="extra_margin_top">You will receive a reply within two working days.</p>
+					</div>
+				</div><!--/content_primary-->
+			</div><!--/content-->
+		</div><!--support page-->
+
+		<!--about page-->
+		<div data-role="page" id="page-about" class="container">	
+			<div data-role="content">
+				<div class="content-primary">
+						<h2>About</h2>
+						<div class="intro_section extra_margin_top">
+							<p class="extra_margin_top">Launched in June 2015, Dublin Inquirer is an independent newspaper which aims to provide quality coverage of city affairs. </p>
+							<p>It is published each Wednesday online, and each month in print.</p>
+
+							<p class="extra_margin_top">This application is for the subscribers of Dublin Inquirer to provide a space for our readers and journalists to engage, and together, to better understand what is going on in the city.</p>
+							<div id="developer_details">
+								<h3>The App Team</h3>
+								<p class="extra_margin_top"><span class="bold_text">Designers</span><span class="break_between_paragraphs"></span><span class="dark_grey_text extra_margin_top">Diana Nacu, Peter Doyle, Kevin Breslin, Ben Miles and Sarah Monks<span></p>
+								
+								<p class="extra_margin_top"><span class="bold_text">Developers</span><span class="break_between_paragraphs"></span><span class="dark_grey_text extra_margin_top">Sarah Monks (Lead developer)</span><br>Email: <a class="blue_text email_link" href="mailto:monks.sarah@gmail.com?Subject=Dublin Inquirer App" target="_blank">monks.sarah@gmail.com</a></p>
+								<p class="extra_margin_top"><span class="dark_grey_text">Derek Bolger</span><br>Email: <a class="blue_text email_link" href="mailto:contact@derekbolger.com?Subject=Dublin Inquirer App" target="_blank">contact@derekbolger.com</a></p>
+							</div>
+						</div>
+				</div><!--/content_primary-->
+			</div><!--/content-->
+		</div><!--/page-about-->
+
+		<!--privacy policy page-->
+		<div data-role="page" id="page-privacy-policy" class="container">			
+			<div data-role="content">
+				<div class="content-primary">
+						<h2>Privacy Policy</h2>
+							<div class="intro_section extra_margin_top">
+								<p class="extra_margin_top">This document explains how Dublin Inquirer processes information about you which is personally identifiable when you use the Dublin Inquirer app. </p>
+								
+								<h3 class="extra_margin_top">How we collect and use the information you provide to us?</h3>
+								<p>We may collect and process the following data about you:</p>
+								<ul class="ul_level_1 bullet_point_list">
+									<li>your name, your email address, month of birth, other registration or profile information and reporting information about your use of any Dublin Inquirer App services; <br>Note: passwords are encrypted and cannot be seen by any staff members.</li>
+									<li>any other information you provide to us when using any Dublin Inquirer App services;</li>
+									<li>if you contact us, we may keep a record of that correspondence including emails and call recordings. This data will not be forwarded to any third party.</li>
+									<li>details about the device you use to access and/or use any Dublin Inquirer App services, which may include your IP address or other unique device identifiers;</li>
+									<li>information regarding your behaviour within the app (e.g page visits) for the purpose of Google Analytics statistics and to continue to try and improve your experience within the app.</li>
+									<li>other data that you choose to provide to us;</li>
+									
+								</ul>
+								<h4 class="extra_margin_top">We use the information you provide to us in the following ways:</h4>
+								<ul class="ul_level_1 bullet_point_list">
+									<li>your contact details may be used to respond to any communication or request from you;</li>
+									<li>to monitor the use of any Dublin Inquirer App services;</li>
+									<li>to investigate any complaints or potential breaches of the service;</li>
+									
+								</ul>
+
+								<h3 class="extra_margin_top">How do we protect the information you provide to us?</h3>
+								<p class="extra_margin_top">All information you provide to us is stored on our secure servers. You are responsible for keeping confidential, the password you have chosen which enables you to access the app. We advise you not to share this password with anyone.</p>
+								<p class="extra_margin_top">Unfortunately, the transmission of information over the internet is not always completely secure. We have taken measures to protect your information (e.g registration information and other), however we cannot guarantee the security of data transmitted to our service; any transmission of data is at your own risk.</p>
+								<p class="extra_margin_top">Once we have received any information from you, we will use strict security features to try to prevent unauthorised third party access.</p>
+								<span class="break_between_paragraphs"></span><hr>
+								<p class="extra_margin_top">We may amend this privacy policy at any given time in order to reflect changes to any of Dublin Inquirer services. We will give you reasonable notice of any changes to the privacy policy.</p>
+								<p class="extra_margin_top">This privacy policy is dated 5 February 2017.</p>
+							</div>
+						
+				</div><!--/content_primary-->
+			</div><!--/content-->
+		</div><!--privacy page-->
+
+
+		<!--terms of use page-->
+		<div data-role="page" id="page-terms-of-use" class="container">
+			<div class="back_button_on_terms_page back_on_top">
+				<a class="back_button_on_terms_link normal_link" data-rel="back" data-transition="none"><i class="fa fa-arrow-left"></i></a>
+				
+			</div>
+			<div data-role="content">
+				<div class="content-primary">
+						<h2 id="terms_of_use_heading">Terms of Use</h2>
+							<div class="intro_section extra_margin_top">
+								<ul class="ul_level_0 bullet_point_list">
+									<li><h3>Your Content and Information</h3>
+										<ul class="ul_level_1 bullet_point_list">
+											<li>When you post content (including photos and other information) within the Engage section of this application, you are allowing all subscribers and staff members of Dublin Inquirer to view that content.</li>
+											<li>When you submit content within the “Contribution” section of this application, you are sending this information privately to the Dublin Inquirer staff. Any content submitted here, will not be published until an agreement has been made between you and the Dublin Inquirer staff.</li>
+
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Safety</h3>
+										<p class="extra_margin_top">We do our very best to keep the Dublin Inquirer Application safe, but it cannot be guaranteed. We need the following commitments by you:</p>
+								
+										<ul class="ul_level_1 bullet_point_list">
+											<li>You must not post or send unauthorized communications (e.g. spam) anywhere within the Dublin Inquirer Application.</li>
+											<li>You must  not collect other users' information or content, or access this application using automated means (such as robots).</li>
+											<li>You must not engage in illegal multi-level marketing within this application.</li>
+											<li>You must not upload any malicious code to this application (e.g. viruses or other).</li>
+											<li>You must not try to obtain other users' login information or access an account belonging to another user.</li>
+											<li>You must not engage in bullying, intimidating, or harassing any other user.</li>
+											<li>You must not submit content that is hateful, threatening, pornographic, violent, or contains nudity or graphic violence.</li>
+											<li>You must not use the Dublin Inquirer Application to do anything illegal or malicious.</li>
+											<li>You must not facilitate any violations of these policies.</li>
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Account security</h3>
+										<p class="extra_margin_top">Here are some commitments you agree to make to us in regards to registering and keeping your account secure:</p>
+										<ul class="ul_level_1 bullet_point_list">
+											<li>You must not use this application if you are under 12.</li>
+											<li>You must not share your password, or do anything else that might threaten the security of your account.</li>
+											<li>When you create a display name for your account, we reserve the right to remove it if we believe it is inappropriate or violates any of the content policies written in these Terms of use.</li>
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Other People's Rights</h3>
+										<p class="extra_margin_top">Please respect other people's rights.</p>
+								
+										<ul class="ul_level_1 bullet_point_list">
+											<li>You must not submit content within this application that infringes someone else's rights or violates the law.</li>
+											<li>We have the right to remove any content you submit within this application if we believe that it violates our policies in any way.</li>
+											<li>If you repeatedly infringe the intellectual property rights of others, we have the right to disable your account.</li>
+											<li>You must not use our Company Logos or Trademarks, without our prior written permission.</li>
+											<li>You must not submit any person's peronsal documents or sensitive financial information within this application.</li>
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Mobile/Device Charges</h3>
+										<p class="extra_margin_top">We currently provide this application and the services within for free, however please be aware that your carrier's normal rates (e.g for internet browsing) will still apply.</p>
+
+									</li>
+									<li><h3 class="extra_margin_top">Software of this Application</h3>
+										<ul class="ul_level_1 bullet_point_list">
+											<li>If you download or use this application, you agree that now and then, the software may download and install updates in order to improve and enhance your experience within the application.</li>
+											<li>You must not modify or attempt to copy source code from us, unless you are explicitly given our permission to do so.</li>	
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Amendments to these Terms</h3>
+										<ul class="ul_level_1 bullet_point_list">
+											<li>You will be notified before any changes are made to these terms and given the opportunity to review the new terms before continuing to use this application and the services within.</li>
+											<li>Your continued use of the services within the Dublin Inquirer Application, following any changes to our terms, confirms your acceptance of the new terms of use.</li>
+										
+										</ul>
+
+									</li>
+									<li><h3 class="extra_margin_top">Other</h3>
+										<ul class="ul_level_1 bullet_point_list">
+											<li>We try to keep the software of this application safe and free from bugs, however you agree that you use it at your own risk. We are providing this application as it is (without any implied warranties).</li>
+											<li>We cannot guarantee that this application will always be secure or free from errors or that it will function without delays or disruptions.</li>
+										</ul>
+									</li>
+									<li><h3 class="extra_margin_top">Report Abuse</h3>
+										<p class="extra_margin_top">If you are aware of any content within this application that violates any of our policies outlined above, please contact the Dublin Inquirer support team (appsupport@dublininquirer.com) to report abuse.</p>
+									</li>
+								</ul>
+								<p class="extra_margin_top">These Terms of Use are dated 1 March 2017.</p>
+							</div>
+						
+				</div><!--/content_primary-->
+			</div><!--/content-->
+			<div class="back_button_on_terms_page">
+				<a class="back_button_on_terms_link normal_link" data-rel="back" data-transition="none"><i class="fa fa-arrow-left"></i></a>	
+			</div>
+		</div><!--/page-terms-of-use-->	
+
+		<!--any other pages generated dynamically with javascript will be appended here-->
+	</div><!--/container_wrapper-->
+
+
+
+	
+	<!--Popup for photo galleries in the engage section. This is for when an engage post contains multiple photos. If a user clicks on one of the thumbnails
+	we insert them into this popup gallery so they can view them in full size -->
+	<div id="engage_post_gallery_popup" class="popup" data-theme="a" data-transition="none">
+		<div>		
+			<!--use the data-rel=back attribute in order to close the popup-->
+			<a class="ui-btn-right normal_link" data-rel="back" data-transition="none"><i class="fa fa-times"></i></a>
+		</div>
+		<div data-role="main" class="ui-content">
+			<div id="engage_post_gallery_container">
+				<ul id="list_of_engage_photos">				
+				<!--we insert the list of photos here with javascript-->
+				</ul>
+					
+  				<div id="image_prev" class="main_image_button main_prev_button"><i class="fa fa-chevron-left"></i></div> 
+  				<div id="image_next" class="main_image_button main_next_button"><i class="fa fa-chevron-right"></i></div>
+			</div>
+		</div>								
+	</div><!--/engage_post_gallery_popup-->
+
+	<!--Side panel area. This contains the side menu-->
+	<div id="panel_area" class="scrollable">		
+		<div class="panel_container">
+			<div class="panel_header"><a data-transition="none" id="side_menu_account_link" class="normal_link" href="#page-account"><div class="profile_image_wrapper"><img src="" id="panel_profile_image" width="35" height="35" alt="Small profile image"/></div><div id="panel_user_name" class="panel_user_name"></div></a></div>
+			
+			<ul>
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-home">
+						<i class="panel_icon fa fa-home"></i>Home<i class="fa fa-chevron-right"></i>
+					</a>
+				</li>	
+				
+				<li class="side_menu_item">
+					<a data-transition="none" id="read_side_menu_link" class="side_menu_link normal_link" href="#page-read">
+						<i class="panel_icon fa fa-book"></i>Read<i class="fa fa-chevron-right"></i>
+					</a>
+				</li>	
+				<li class="side_menu_item">
+					<a data-transition="none" id="engage_side_menu_link" class="side_menu_link normal_link" href="#page-engage">
+						<i class="panel_icon fa fa-comments-o"></i>Engage<i class="fa fa-chevron-right"></i>
+					</a>
+				</li>
+				<li class="side_menu_item">
+					<a data-transition="none" id="contribute_side_menu_link" class="side_menu_link normal_link" href="#page-contribute">
+						<i class="panel_icon fa fa-pencil"></i>Contribute<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>	
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" id="open_in_app_browser">
+						<i class="panel_icon fa fa-external-link"></i>Open our website<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-account">
+						<i class="panel_icon fa fa-user"></i>My Account<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-support">
+						<i class="panel_icon fa fa-question-circle"></i>Support<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-about">
+						<i class="panel_icon fa fa-info-circle"></i>About<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-privacy-policy">
+						<i class="panel_icon fa fa-lock"></i>Privacy Policy<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				<li class="side_menu_item">
+					<a data-transition="none" class="side_menu_link normal_link" href="#page-terms-of-use">
+						<i class="panel_icon fa fa-file-text"></i>Terms of Use<i class="fa fa-chevron-right"></i>
+					</a>
+					
+				</li>
+				<li class="side_menu_item" >
+					<span id="logout_button" class="side_menu_link login normal_link">
+						<i class="panel_icon fa fa-power-off"></i>Log Out<i class="fa fa-chevron-right"></i>
+					</span>
+					
+				</li>
+			</ul>
+		</div><!--/panel_container-->
+	</div><!--/panel_area-->
+
+<script type="text/javascript" language="JavaScript" src="js/esapi/resources/i18n/ESAPI_Standard_en_US.properties.js"></script>
+<script type="text/javascript" language="JavaScript" src="js/esapi/esapi.js"></script>
+<script type="text/javascript" language="JavaScript" src="js/esapi/resources/Base.esapi.properties.js"></script>
+<script type="text/javascript">  
+// Set any custom configuration options here or in an external js file that gets sourced in above. 
+Base.esapi.properties.application.Name = "Dublin Inquirer App";
+//Initialize the api    
+org.owasp.esapi.ESAPI.initialize();
+</script>
+
+<script src="js/custom_js.js"></script>
+<script src="js/jquery.dotdotdot.min.js"></script>
+<script src="http://w.soundcloud.com/player/api.js" type="text/javascript" defer></script>
+</body>
+</html>
